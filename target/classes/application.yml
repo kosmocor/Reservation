@@ -38,9 +38,23 @@ logging:
 server:
   port: 8081
 
+#  --> 여기부터
+# application.yml
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  command:
+    # 전역설정
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 600
+  #  --> 여기까지
+
 api:
   url:
     payment: http://localhost:8082
+    delivery: http://localhost:8089
 ---
 
 spring:
@@ -69,3 +83,4 @@ spring:
 api:
   url:
     payment: http://Payment:8080
+    delivery: http://Delivery:8080

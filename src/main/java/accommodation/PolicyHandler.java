@@ -18,10 +18,13 @@ public class PolicyHandler{
         if(paymentcompleted.isMe()){
             System.out.println("====================================결제완료 1차====================================");
             if(reservationManagementrepository.findById(paymentcompleted.getReservationNumber()) != null){
-                System.out.println("====================================결제완료====================================");
+                System.out.println("==================================결제완료====================================");
+                System.out.println("========= ReservationNumber = " + paymentcompleted.getReservationNumber());
+                /*
                 Reservation reservationManagement = reservationManagementrepository.findById(paymentcompleted.getReservationNumber()).get();
                 reservationManagement.setReserveStatus("paymentComp");
                 reservationManagementrepository.save(reservationManagement);
+                 */
             }
 
         }

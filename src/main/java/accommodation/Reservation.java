@@ -4,6 +4,9 @@ import javax.persistence.*;
 
 import accommodation.external.Payment;
 import accommodation.external.PaymentManagementService;
+import accommodation.external.Delivery;
+import accommodation.external.DeliveryService;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import accommodation.config.kafka.KafkaProcessor;
@@ -24,11 +27,30 @@ public class Reservation {
     private String reserveStatus;
     private Integer roomNumber;
     private Integer PaymentPrice;
-
-
+    // 추가, 배송 요청
+    private String deliveryStatus;
 
     @PrePersist
     public void onPrePersist(){
+
+        // 배송 요청 추가 -> Rest
+        if ("DeliveryRequested".equals(deliveryStatus) ) {
+            System.out.println("=============배송 요청 진행=============");
+            System.out.println("====== 2 : deliveryStatus    = " + this.getDeliveryStatus());
+            System.out.println("====== 3 : reservationNumber = " + this.getReservationNumber());
+            System.out.println("====== 4 : customerId        = " + this.getCustomerId());
+            System.out.println("====== 5 : customerName      = " + this.getCustomerName());
+            Delivery delivery = new Delivery();
+
+            delivery.setDeliveryStatus(this.getDeliveryStatus());
+            delivery.setReservationNumber(this.getReservationNumber());
+            delivery.setCustomerId(this.getCustomerId());
+            delivery.setCustomerName(this.getCustomerName());
+
+            Application.applicationContext.getBean(DeliveryService.class).RequestDelivery(delivery);
+            System.out.println("RequestCompleted ReserReservationNumber= " + getReservationNumber());
+        }
+
         setReserveStatus("reserve");
         Reserved reserved = new Reserved();
         reserved.setReservationNumber(this.getReservationNumber());
@@ -41,9 +63,43 @@ public class Reservation {
         reserved.publishAfterCommit();
     }
 
-
     @PreUpdate
     public void onPreUpdate(){
+
+        // 배송 요청 추가 DeliveryCompleted -> 이벤트 메시지 발송..
+        if ("DeliveryCompleted".equals(deliveryStatus) ) {
+            System.out.println("=============배송 완료 진행=============");
+            System.out.println("====== 2 : deliveryStatus    = " + this.getDeliveryStatus());
+            System.out.println("====== 3 : reservationNumber = " + this.getReservationNumber());
+            System.out.println("====== 4 : customerId        = " + this.getCustomerId());
+            System.out.println("====== 5 : customerName      = " + this.getCustomerName());
+
+            DeliveryCompleted deliveryCompleted = new DeliveryCompleted();
+
+            deliveryCompleted.setDeliveryStatus(deliveryStatus);
+            deliveryCompleted.setReservationNumber(reservationNumber);
+            deliveryCompleted.setCustomerId(customerId);
+            deliveryCompleted.setCustomerName(customerName);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String json = null;
+
+            try {
+                json = objectMapper.writeValueAsString(deliveryCompleted);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("JSON format exception", e);
+            }
+
+            KafkaProcessor processor = Application.applicationContext.getBean(KafkaProcessor.class);
+            MessageChannel outputChannel = processor.outboundTopic();
+
+            outputChannel.send(MessageBuilder
+                    .withPayload(json)
+                    .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                    .build());
+            System.out.println(deliveryCompleted.toJson());
+            deliveryCompleted.publishAfterCommit();
+        }
 
         if("payment".equals(this.getReserveStatus())){
             Reserved reserved = new Reserved();
@@ -61,7 +117,6 @@ public class Reservation {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("JSON format exception", e);
             }
-//        System.out.println(json);
 
             KafkaProcessor processor = Application.applicationContext.getBean(KafkaProcessor.class);
             MessageChannel outputChannel = processor.outboundTopic();
@@ -106,7 +161,6 @@ public class Reservation {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("JSON format exception", e);
             }
-//        System.out.println(json);
 
             KafkaProcessor processor = Application.applicationContext.getBean(KafkaProcessor.class);
             MessageChannel outputChannel = processor.outboundTopic();
@@ -120,8 +174,6 @@ public class Reservation {
             setReserveStatus("End");
         }
     }
-
-
 
 
     public Integer getReservationNumber() {
@@ -168,5 +220,11 @@ public class Reservation {
         PaymentPrice = paymentPrice;
     }
 
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
 
+    public void setDeliveryStatus(String deliveryStatus) {
+        this.deliveryStatus = deliveryStatus;
+    }
 }

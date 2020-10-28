@@ -1,6 +1,7 @@
 accommodation\ReservationRepository.class
 accommodation\Application.class
 accommodation\external\ReservationManagementService.class
+accommodation\DeliveryCompleted.class
 accommodation\PolicyHandler.class
 accommodation\PaymentRequested.class
 accommodation\AbstractEvent$1.class
@@ -9,7 +10,9 @@ accommodation\AbstractEvent.class
 accommodation\Reservation.class
 accommodation\ReservationController.class
 accommodation\config\kafka\KafkaProcessor.class
+accommodation\external\Delivery.class
 accommodation\PaymentCompleted.class
 accommodation\external\PaymentManagementService.class
 accommodation\Reserved.class
 accommodation\external\Payment.class
+accommodation\external\DeliveryService.class
