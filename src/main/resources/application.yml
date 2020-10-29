@@ -71,5 +71,5 @@ spring:
 api:
   url:
     payment: http://Payment:8080
-    delivery: http://Delivery:8080
+    delivery: ${configurl}
 
