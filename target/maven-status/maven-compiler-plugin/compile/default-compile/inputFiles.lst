@@ -1,5 +1,6 @@
 C:\accommodationMgt\Reservation\src\main\java\accommodation\external\PaymentManagementService.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\PolicyHandler.java
+C:\accommodationMgt\Reservation\src\main\java\accommodation\external\DeliveryService.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\external\Delivery.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\external\Payment.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\AbstractEvent.java
@@ -13,3 +14,4 @@ C:\accommodationMgt\Reservation\src\main\java\accommodation\Reserved.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\PaymentCompleted.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\ReservationController.java
 C:\accommodationMgt\Reservation\src\main\java\accommodation\ReservationRepository.java
+C:\accommodationMgt\Reservation\src\main\java\accommodation\DeliveryCompleted.java

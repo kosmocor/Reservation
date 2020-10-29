@@ -25,10 +25,10 @@ spring:
       bindings:
         event-in:
           group: Reservation
-          destination: hotelmanage
+          destination: accommodation
           contentType: application/json
         event-out:
-          destination: hotelmanage
+          destination: accommodation
           contentType: application/json
 
 logging:
@@ -38,8 +38,12 @@ logging:
 server:
   port: 8081
 
+api:
+  url:
+    payment: http://localhost:8082
+    delivery: http://localhost:8089
+
 #  --> 여기부터
-# application.yml
 feign:
   hystrix:
     enabled: true
@@ -49,12 +53,7 @@ hystrix:
     # 전역설정
     default:
       execution.isolation.thread.timeoutInMilliseconds: 600
-  #  --> 여기까지
-
-api:
-  url:
-    payment: http://localhost:8082
-    delivery: http://localhost:8089
+#  --> 여기까지
 ---
 
 spring:
@@ -75,12 +74,24 @@ spring:
       bindings:
         event-in:
           group: Reservation
-          destination: hotelmanage
+          destination: accommodation
           contentType: application/json
         event-out:
-          destination: hotelmanage
+          destination: accommodation
           contentType: application/json
 api:
   url:
     payment: http://Payment:8080
     delivery: http://Delivery:8080
+
+#  --> 여기부터
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  command:
+    # 전역설정
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 600
+    #  --> 여기까지
